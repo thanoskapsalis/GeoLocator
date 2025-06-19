@@ -26,6 +26,7 @@ function geolocator_admin_menu_callback(){
 	echo '<div id="manager-page"></div>';
 }
 
+register_activation_hook(__FILE__, 'geolocator_create_table');
 function geolocator_create_table()
 {
 	global $wpdb;
@@ -45,15 +46,14 @@ function geolocator_create_table()
 	dbDelta($sql);
 }
 
+
+register_deactivation_hook(__FILE__, 'geolocator_drop_table');
 function geolocator_drop_table()
 {
 	global $wpdb;
 	$table_name = $wpdb->prefix . "geolocator";
-	$charset_collate = $wpdb->get_charset_collate();
-
-	$sql = "DROP TABLE IF EXISTS $table_name $charset_collate;";
-	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-	dbDelta($sql);
+	$sql = "DROP TABLE IF EXISTS $table_name";
+	$wpdb->query($sql);
 }
 
 
@@ -114,13 +114,20 @@ function geolocator_register_example_routes() {
 		'callback' => array($geoLocatorManagerService, 'GetGeoLocatorData')
 	) );
 
-	}
-
-		
+	register_rest_route( 'geolocator/api', '/data/(?P<id>\d+)', array(
+		'methods'  => WP_REST_Server::CREATABLE,
+		'callback' => array($geoLocatorManagerService, 'SelectDataById'),
+		'args'     => array(
+			'id' => array(
+				'description' => 'The ID of the data to retrieve',
+				'type'        => 'integer',
+				'required'    => true,
+			),
+		),
+	));
+}
 
 add_action( 'rest_api_init', 'geolocator_register_example_routes' );
-register_activation_hook(__FILE__, 'geolocator_create_table');
-register_deactivation_hook(__FILE__, 'geolocator_drop_table');
 add_action( 'admin_enqueue_scripts', 'geolocator_enqueue_scripts' );
 add_action('admin_menu', 'geolocator_admin_menu');
 

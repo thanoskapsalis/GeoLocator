@@ -24,6 +24,7 @@
     "@progress/kendo-react-progressbars": "^11.1.0",
     "@progress/kendo-react-tooltip": "^11.1.0",
     "@progress/kendo-theme-default": "^11.0.2",
+    "@wordpress/api-fetch": "^7.25.0",
     "@wordpress/components": "^29.9.0",
     "@wordpress/dom-ready": "^4.23.0",
     "@wordpress/element": "^6.23.0",

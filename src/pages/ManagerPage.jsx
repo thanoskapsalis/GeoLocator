@@ -1,8 +1,7 @@
 ﻿import {useEffect, useState} from "@wordpress/element";
 import {Button, Flex, FlexBlock, PanelBody, TextControl} from "@wordpress/components";
 import {Grid, GridColumn as Column} from "@progress/kendo-react-grid";
-import axios from "axios";
-
+import apiFetch from "@wordpress/api-fetch";
 
 export const ManagerPage = () => {
 
@@ -12,9 +11,9 @@ export const ManagerPage = () => {
     const [data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get('/wp-json/geolocator/api/data')
+        apiFetch({path:'/geolocator/api/data'})
             .then(response => {
-               setData(response.data);
+               setData(response);
             })
             .catch(error => {
                 console.error('API Error:', error);
