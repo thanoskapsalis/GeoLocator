@@ -1,13 +1,13 @@
 ﻿import {useEffect, useState} from "@wordpress/element";
-import {Button, Flex, FlexBlock, PanelBody, TextControl} from "@wordpress/components";
+import {Button, DatePicker, DateTimePicker, Flex, FlexBlock, PanelBody, TextControl} from "@wordpress/components";
 import {Grid, GridColumn as Column} from "@progress/kendo-react-grid";
 import apiFetch from "@wordpress/api-fetch";
 
 export const ManagerPage = () => {
 
-    const [thanos, setThanos] = useState('');
     const [formData, setFormData] = useState({})
     const [saving, setSaving] = useState(false);
+    const [date, setDate] = useState(new Date());
     const [data, setData] = useState([]);
 
     useEffect(() => {
@@ -23,11 +23,21 @@ export const ManagerPage = () => {
 
     const onToggle = () => {
         setSaving(true);
-        console.log(formData);
-        setTimeout(function(){
-            console.log("THIS IS");
-        }, 2000);
-        setSaving(false);
+        apiFetch({
+            path:'/geolocator/api/data', 
+            method: 'POST', 
+            headers: {'Content-Type': 'application/json'},
+            data: formData})
+            .then(response => {
+                setFormData({});
+                setData(response.data)
+            })
+            .catch(error => {
+                console.error('API Error:', error);
+            })
+            .finally(() => {
+                setSaving(false);
+            });
     }
 
     const handleChange = (field) => (value) => {
@@ -51,7 +61,7 @@ export const ManagerPage = () => {
                     onChange={handleChange('description')}
                 ></TextControl>
                 <Button
-                    isPrimary
+                    variant="primary"
                     isBusy={saving}
                     onClick={onToggle}
                 >
@@ -63,7 +73,7 @@ export const ManagerPage = () => {
                     <Grid
                         style={{ height: '475px' }}
                         data={data}
-                        dataItemKey="ProductID"
+                        dataItemKey="id"
                         autoProcessData={true}
                         sortable={true}
                         pageable={true}
@@ -71,11 +81,12 @@ export const ManagerPage = () => {
                         editable={{ mode: 'incell' }}
                         defaultSkip={0}
                         defaultTake={10}
+                        
                     >
                         <Column field="id" title="ID" editable={false} filterable={false} width="75px" />
                         <Column field="name" title="Name" editor="text" />
                         <Column field="description" title="Category" editable={false} width="200px"></Column>
-                        <Column field="current_date" title="Price" editor="dateTime" width="150px" />
+                        <Column field="created_at" title="Created at" editor="dateTime" width="150px" />
     
                     </Grid>
                 </FlexBlock>

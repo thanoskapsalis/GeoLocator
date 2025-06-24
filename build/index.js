@@ -50517,9 +50517,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const ManagerPage = () => {
-  const [thanos, setThanos] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)('');
   const [formData, setFormData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)({});
   const [saving, setSaving] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const [date, setDate] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)(new Date());
   const [data, setData] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useState)([]);
   (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
     _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
@@ -50533,11 +50533,21 @@ const ManagerPage = () => {
   }, []);
   const onToggle = () => {
     setSaving(true);
-    console.log(formData);
-    setTimeout(function () {
-      console.log("THIS IS");
-    }, 2000);
-    setSaving(false);
+    _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_2___default()({
+      path: '/geolocator/api/data',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      data: formData
+    }).then(response => {
+      setFormData({});
+      setData(response.data);
+    }).catch(error => {
+      console.error('API Error:', error);
+    }).finally(() => {
+      setSaving(false);
+    });
   };
   const handleChange = field => value => {
     setFormData(prev => ({
@@ -50555,7 +50565,7 @@ const ManagerPage = () => {
         label: "Description",
         onChange: handleChange('description')
       }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
-        isPrimary: true,
+        variant: "primary",
         isBusy: saving,
         onClick: onToggle,
         children: "Save"
@@ -50567,7 +50577,7 @@ const ManagerPage = () => {
             height: '475px'
           },
           data: data,
-          dataItemKey: "ProductID",
+          dataItemKey: "id",
           autoProcessData: true,
           sortable: true,
           pageable: true,
@@ -50593,8 +50603,8 @@ const ManagerPage = () => {
             editable: false,
             width: "200px"
           }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)(_progress_kendo_react_grid__WEBPACK_IMPORTED_MODULE_5__.GridColumn, {
-            field: "current_date",
-            title: "Price",
+            field: "created_at",
+            title: "Created at",
             editor: "dateTime",
             width: "150px"
           })]

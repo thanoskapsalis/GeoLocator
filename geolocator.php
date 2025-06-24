@@ -101,13 +101,9 @@ function geolocator_enqueue_scripts( $admin_page ){
 
 
 function geolocator_register_example_routes() {
+	
 	// Instantiate the service class inside the function
 	$geoLocatorManagerService = new GeoLocatorManagerService();
-
-	register_rest_route( 'hello-world/v1', '/phrase', array(
-		'methods'  => WP_REST_Server::READABLE,
-		'callback' => array($geoLocatorManagerService, 'GetGeoLocatorData')
-	) );
 
 	register_rest_route( 'geolocator/api', '/data', array(
 		'methods'  => WP_REST_Server::READABLE,
@@ -121,6 +117,28 @@ function geolocator_register_example_routes() {
 			'id' => array(
 				'description' => 'The ID of the data to retrieve',
 				'type'        => 'integer',
+				'required'    => true,
+			),
+		),
+	));
+
+	register_rest_route( 'geolocator/api', '/data', array(
+		'methods'  => WP_REST_Server::CREATABLE,
+		'callback' => array($geoLocatorManagerService, 'AddGeoLocatorData'),
+		'args'     => array(
+			// 'created_at' => array(
+			// 	'description' => 'The datetime of the data to update',
+			// 	'type'        => 'date-time',
+			// 	'required'    => true,
+			// ),
+			'name' => array(
+				'description' => 'The name of the data',
+				'type'        => 'string',
+				'required'    => true,
+			),
+			'description' => array(
+				'description' => 'The description of the data',
+				'type'        => 'string',
 				'required'    => true,
 			),
 		),
